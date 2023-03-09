@@ -14,7 +14,7 @@ c_hb = 1.05457266913e-34;
 c_h = c_hb*2*pi;    %these are variables we are using
 
 InputParasL.E0=1e5;
-InputParasL.we = 1e13 ;
+InputParasL.we = 0 ; %1e13
 InputParasL.t0 = 2e-12;
 InputParasL.wg = 5e-13;
 InputParasL.phi = 0;
@@ -95,8 +95,8 @@ RL = 0.9;
 RR = 0.9i;
 
 %Milestone 2 Modificatons
-beta_r = 80;
-beta_i = 8;
+beta_r = 0;
+beta_i = 0;
 
 beta = ones(size(z))*(beta_r+1i*beta_i);
 exp_det = exp(-1i*dz*beta);

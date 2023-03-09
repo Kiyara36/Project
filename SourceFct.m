@@ -1,7 +1,7 @@
 function E = SourceFct(t, InputParas)
 
 if isfield(InputParas,'rep')
-    n = floor(t/InputParas.rep);
+    n = floor(t/InputParas.rep); % integer multiples of time that has passed  
     t = t-n*InputParas.rep;
 end
 
@@ -19,3 +19,4 @@ end
 %InputParas.phi - phase shift
 %So the equation is giving us a gaussian waveform with a modulation that
 %gives us that turning motion. 
+% 'rep' - repition time

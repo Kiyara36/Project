@@ -118,13 +118,13 @@ beta = ones(size(z))*(beta_r+1i*beta_i);
 exp_det = exp(-1i*dz*beta);
 
 %Milestone 3 Modifications
-% kappa0 = 100;
-% kappaStart = 1/3;
-% kappaStop = 2/3;
-% 
-% kappa = kappa0*ones(size(z));
-% kappa(z<L*kappaStart) = 0;
-% kappa(z>L*kappaStop) = 0;
+kappa0 = 100;
+kappaStart = 1/3;
+kappaStop = 2/3;
+
+kappa = kappa0*ones(size(z));
+kappa(z<L*kappaStart) = 0;
+kappa(z>L*kappaStop) = 0;
 
 for i = 2:Nt
     t = dt*(i-1);
@@ -138,8 +138,8 @@ for i = 2:Nt
     Er(Nz) = InputR(i) + RR*Ef(Nz);
 
     %Milestone 3 Modifications
-    Ef(2:Nz) = fsync*exp_det(1:Nz-1).*Ef(1:Nz-1); %+ 1i*dz*kappa(2:Nz).*Er(2:Nz);
-    Er(1:Nz-1) = fsync*exp_det(2:Nz).*Er(2:Nz); %+  1i*dz*kappa(2:Nz).*Ef(2:Nz);
+    Ef(2:Nz) = fsync*exp_det(1:Nz-1).*Ef(1:Nz-1); + 1i*dz*kappa(2:Nz).*Er(2:Nz);
+    Er(1:Nz-1) = fsync*exp_det(2:Nz).*Er(2:Nz); +  1i*dz*kappa(2:Nz).*Ef(2:Nz);
 
     %Milestone 4 Modifications
     Pf(1) = 0;
