@@ -231,14 +231,14 @@ for i = 2:Nt
         hold off
         subplot(3,2,[5,6]);
         plot(time*1e12,real(InputL),'r'); hold on
-%         plot(time*1e12,real(OutputR),'g');
+        plot(time*1e12,real(OutputR),'g');
         plot(time*1e12,real(InputR),'b');
-%         plot(time*1e12,real(OutputL),'m');
+        plot(time*1e12,real(OutputL),'m');
 %         xlim([0,Nt*dt*1e12])
         ylim(YL)
         xlabel('time(ps)')
         ylabel('0')
-        legend('Left Input','Right Input', 'Right Output','Left Output','Location', 'east')
+        legend('Left Input','Right Output', 'Right Input','Left Output','Location', 'east')
         hold off
         pause(0.01)
 

@@ -11,14 +11,13 @@ c_mu_0 = 1/c_eps_0/c_c^2;
 c_q = 1.60217653e-19;
 c_hb = 1.05457266913e-34;
 c_h = c_hb*2*pi;    %these are variables we are using
-% 
-%  InputParasL.E0 = 1e7;
-%  InputParasL.we = 0; %1e13
-%  InputParasL.t0 = 30e-13; % when the pulse starts
-% 
-%  InputParasL.wg = 10e-13;
-%  InputParasL.phi = 0;
-%  InputParasL.rep = 500e-12;
+
+ InputParasL.E0 = 1e7;
+ InputParasL.we = 0; %1e13
+ InputParasL.t0 = 30e-13; % when the pulse starts
+ InputParasL.wg = 10e-13;
+ InputParasL.phi = 0;
+InputParasL.rep = 500e-12;
 
 % InputParasR.E0=1e5;
 % InputParasR.we = 0;
@@ -26,7 +25,7 @@ c_h = c_hb*2*pi;    %these are variables we are using
 % InputParasR.wg = 5e-13;
 % InputParasR.phi = 0;
 
-InputParasL = 0; 
+%InputParasL = 0; 
 InputParasR = 0;
 
 n_g = 3.5;
@@ -39,12 +38,13 @@ f0 = c_c/Lambda;
 
 plotN = 500; 
 
-L = 0.1; %1000e-6*1e2
+L = 200e-4;
+% L = 0.1; %1000e-6*1e2
 XL = [0,L];
-%YL = [-InputParasL.E0,InputParasL.E0];
-YL = [0, 0];
+YL = [-InputParasL.E0,InputParasL.E0];
+%YL = [0, 0];
 
-Nz = 100;
+Nz = 51;
 dz = L/(Nz-1);
 dt = dz/vg;
 fsync = dt*vg/dz;
@@ -57,7 +57,7 @@ t_L = dt*Nz;
 g_fwhm = 3.53e+012/10;
 LGamma = g_fwhm*2*pi;
 Lw0 = 0.0;
-LGain = 0.00; %0.05
+LGain = 0.05; %0.01
 
 z = linspace(0,L,Nz).'; %We are making an equally spaced matrix from values 0 to L in the range of Nz(500)
 time = nan(1,Nt);
@@ -119,8 +119,8 @@ ylabel('E')
 
 hold off
 
-RL = 0; %9
-RR = 0i; %9i
+RL = 0.5; %9
+RR = 0.5; %9i
 
 %Milestone 2 Modificatons
 beta_r = zeros(size(z)); %80
@@ -132,14 +132,22 @@ Nave(1) = mean(N);
 
 gain = vg*2.5e-16;
 eVol = 1.5e-10*c_q;
-Ion = 1000; %0.25e-9
-Ioff = 3e-9;
-I_off = 0.024;
-I_on = 0.1;
+Ion = 0.05e-9;
+Ioff = 30000e-9;
+% I_off = 0.024;
+% I_on = 0.1;
 taun = 1e-9;
 Zg = sqrt(c_mu_0/c_eps_0)/n_g;
 EtoP = 1/(Zg*f0*vg*1e-2*c_hb);
 alpha = 0;
+
+%Milestone 8 Modifications
+L = 100e-4;
+Nz = 51;
+tIon = 0.05e-9;
+tIoff = 30000e-9;
+I_off = 0.024;
+I_on = 0.2;
 
 %Milestone 3 Modifications
 % kappa0 = 100;
@@ -153,7 +161,12 @@ alpha = 0;
 %Milestone 7 Modifications
 beta_spe = .3e-5;
 gamma = 1.0;
-SPE = 7;%7
+SPE = 7;
+
+%Milestone 9 : Time delay constants
+timeDelay = 1;
+R_ext = 0.75*exp(1i*pi/3); %External mirror
+TD = 1;
 
 for i = 2:Nt
     t = dt*(i-1);
@@ -164,7 +177,15 @@ for i = 2:Nt
     %InputR(i) = ErN(t,InputParasR);
 
     Ef(1) = InputL(i) + RL*Er(1);
-    Er(Nz) = InputR(i) + RR*Ef(Nz);
+
+    %Milestone 9 Modifications
+    if i > timeDelay
+        TD = i - timeDelay;
+        Er(Nz) = OutputR(TD) + RR*Ef(Nz);
+    else
+        Er(Nz) = RR*Ef(Nz);
+    end
+    %Er(Nz) = InputR(i) + RR*Ef(Nz);
 
     %Milestone 4 Modifications
     Pf(1) = 0;
@@ -194,7 +215,7 @@ for i = 2:Nt
     OutputR(i) = Ef(Nz)*(1-RR);
     OutputL(i) = Er(1)*(1-RL);
 
-    %Milestone 6 Modifications
+     %milestone 6 Modifications
     S = (abs(Ef).^2 +abs(Er).^2).*EtoP*1e-6;
 
     if t < Ion || t > Ioff
@@ -266,6 +287,39 @@ for i = 2:Nt
         legend('Left Input','Right Output', 'Right Input','Left Output','Location', 'east')
         hold off
         pause(0.01)
+
+        
+%         subplot(3,2,5)
+%         plot(z*10000,real(Er),'b'); hold on
+%         plot(z*10000,imag(Er),'b--'); hold off
+%         %xlim(XL*1e4)
+%         %ylim(YL)
+%         xlabel('z(\mum)')
+%         ylabel('E_r')
+%         legend('\Re','\Im')
+%         
+%         subplot(3,4,6)
+%         plot(z*10000,real(Er),'b'); hold on
+%         plot(z*10000,imag(Er),'b--'); hold off
+%         %xlim(XL*1e4)
+%         ylim(YL)
+%         xlabel('z(\mum')
+%         ylabel('P_r')
+%         legend('\Re','\Im')
+        
+%         hold off
+%         subplot(3,4,[9,10]);
+%         plot(time*1e12,real(InputL),'r'); hold on
+%         plot(time*1e12,real(OutputR),'g');
+%         plot(time*1e12,real(InputR),'b');
+%         plot(time*1e12,real(OutputL),'m');
+%         xlim([0,Nt*dt*1e12])
+%         ylim(YL)
+%         xlabel('time(ps)')
+%         ylabel('0')
+%         legend('Left Input','Right Output', 'Right Input','Left Output','Location', 'east')
+%         hold off
+%         pause(0.01)
      end
     
     %Milestone 4 Modifications
@@ -290,7 +344,7 @@ plot(time * 1e12, real(OutputR)); hold on
 plot(time * 1e12, real(InputL)); hold on
 %plot(time * 1e12, real(OutputL)); hold on 
 xlabel('time(ps)')
-ylabel('Output')
+ylabel('Right Output')
 legend('Output', 'Input')
 hold off
 % 
@@ -300,6 +354,7 @@ plot(omega, 20*log(abs(fftInput_L))); hold on
 plot(omega, 20*log(abs(fftOutput_R)));
 xlabel('THz')
 ylabel('|E|')
+%xlim([-0.1, 0.1])
 legend('Input','Output')
 hold off
 % 
@@ -309,7 +364,7 @@ plot(omega, unwrap(angle(fftOutput_R))); hold on
 %plot(omega, unwrap(angle(fftInput_R)));
 %plot(omega, unwrap(angle(fftOutput_L)));
 plot(omega, unwrap(angle(fftInput_L)));
-xlabel('GHz')
+xlabel('THz')
 ylabel('Phase (E)')
 legend('Output','Input')
 hold off 
